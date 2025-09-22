@@ -45,8 +45,12 @@ router.use(cors({
       process.env.FRONTEND_URL || 'http://localhost:3000',
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:5173',
+      'http://localhost:5174',
       'https://localhost:3000',
-      'https://localhost:3001'
+      'https://localhost:3001',
+      'https://localhost:5173',
+      'https://localhost:5174'
     ];
     
     // Allow requests with no origin (mobile apps, etc.)

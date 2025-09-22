@@ -15,7 +15,9 @@ export const createServiceSchema = Joi.object({
     .messages({
       'string.pattern.base': 'Service name can only contain letters, numbers, spaces, hyphens, underscores, and dots'
     }),
-  description: Joi.string().trim().max(500).allow(null, '')
+  description: Joi.string().trim().max(500).allow(null, ''),
+  entity_type: Joi.string().valid('service', 'database', 'api', 'custom').default('service'),
+  active_status: Joi.string().valid('active', 'down').default('active')
 });
 
 export const updateServiceSchema = Joi.object({
@@ -25,7 +27,9 @@ export const updateServiceSchema = Joi.object({
       'string.pattern.base': 'Service name can only contain letters, numbers, spaces, hyphens, underscores, and dots'
     }),
   description: Joi.string().trim().max(500).allow(null, ''),
-  status: Joi.string().valid('operational', 'degraded', 'partial_outage', 'major_outage')
+  status: Joi.string().valid('operational', 'degraded', 'partial_outage', 'major_outage'),
+  entity_type: Joi.string().valid('service', 'database', 'api', 'custom'),
+  active_status: Joi.string().valid('active', 'down')
 }).min(1);
 
 export const updateServiceStatusSchema = Joi.object({

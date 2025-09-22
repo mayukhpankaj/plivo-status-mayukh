@@ -1,0 +1,24 @@
+global:
+  evaluation_interval: 15s
+  scrape_interval: 15s
+scrape_configs:
+- job_name: prometheus
+  static_configs:
+  - targets:
+    - localhost:9090
+- job_name: org_37ff8d80-a555-4917-ae3b-d8e90000babe
+  metrics_path: /metrics
+  scrape_interval: 30s
+  static_configs:
+  - labels:
+      organization_id: 37ff8d80-a555-4917-ae3b-d8e90000babe
+    targets:
+    - localhost:8090
+- job_name: org_a4e7b716-4490-423e-b27c-769c8f53846d
+  metrics_path: /metrics
+  scrape_interval: 30s
+  static_configs:
+  - labels:
+      organization_id: a4e7b716-4490-423e-b27c-769c8f53846d
+    targets:
+    - localhost:8091

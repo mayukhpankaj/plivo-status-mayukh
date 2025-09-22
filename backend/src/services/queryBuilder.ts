@@ -281,14 +281,18 @@ export class TenantQueryBuilder {
     team_id: string;
     name: string;
     description?: string;
+    entity_type?: string;
+    active_status?: string;
   }): Promise<Service> {
     await this.ensureContext();
-    
+
     const { data, error } = await supabase
       .from('services')
       .insert({
         ...serviceData,
-        status: 'operational'
+        status: 'operational',
+        entity_type: serviceData.entity_type || 'service',
+        active_status: serviceData.active_status || 'active'
       })
       .select()
       .single();

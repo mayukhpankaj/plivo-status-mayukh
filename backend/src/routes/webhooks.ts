@@ -37,24 +37,79 @@ const verifyWebhook = (req: Request, res: Response, next: any) => {
 router.post('/clerk/user.created', verifyWebhook, async (req: Request, res: Response) => {
   try {
     const { data: userData } = req.body;
-    
+
+    if (!userData) {
+      console.error('No user data in webhook payload');
+      return res.status(400).json({ error: 'No user data provided' });
+    }
+
     console.log('User created webhook received:', userData.id);
 
-    // Create user record in Supabase (if needed for additional user data)
-    // Note: We're using Clerk as the primary user store, so this is optional
-    const { error } = await supabase
-      .from('user_profiles') // Optional table for additional user data
+    // Create user profile in Supabase
+    const { error: profileError } = await supabase
+      .from('user_profiles')
       .insert({
         clerk_user_id: userData.id,
         email: userData.email_addresses?.[0]?.email_address,
         first_name: userData.first_name,
         last_name: userData.last_name,
+        image_url: userData.image_url,
         created_at: new Date(userData.created_at),
         updated_at: new Date(userData.updated_at)
       });
 
-    if (error && error.code !== '23505') { // Ignore duplicate key errors
-      console.error('Failed to create user profile:', error);
+    if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
+      console.error('Failed to create user profile:', profileError);
+    }
+
+    // Create a default organization for the new user
+    const orgName = `${userData.first_name || 'User'}'s Organization`;
+    const orgSlug = `${userData.first_name || 'user'}-${userData.id.slice(-8)}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+    const { data: orgData, error: orgError } = await supabase
+      .from('organizations')
+      .insert({
+        name: orgName,
+        slug: orgSlug,
+        owner_id: userData.id
+      })
+      .select()
+      .single();
+
+    if (orgError) {
+      console.error('Failed to create default organization:', orgError);
+    } else {
+      console.log('Created default organization:', orgData.id, 'for user:', userData.id);
+
+      // Create a default team within the organization
+      const { data: teamData, error: teamError } = await supabase
+        .from('teams')
+        .insert({
+          organization_id: orgData.id,
+          name: 'Default Team',
+          slug: 'default'
+        })
+        .select()
+        .single();
+
+      if (teamError) {
+        console.error('Failed to create default team:', teamError);
+      } else {
+        console.log('Created default team:', teamData.id, 'for organization:', orgData.id);
+
+        // Add the user as owner of the default team
+        const { error: memberError } = await supabase
+          .from('team_members')
+          .insert({
+            team_id: teamData.id,
+            user_id: userData.id,
+            role: 'owner'
+          });
+
+        if (memberError) {
+          console.error('Failed to add user to default team:', memberError);
+        }
+      }
     }
 
     res.status(200).json({ success: true });

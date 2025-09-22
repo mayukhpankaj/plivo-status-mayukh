@@ -94,7 +94,7 @@ router.post('/',
   requireMinimumTeamRole('admin'),
   asyncHandler(async (req: any, res: any) => {
     const userId = req.userId!;
-    const { team_id, name, description } = req.body;
+    const { team_id, name, description, entity_type, active_status } = req.body;
 
     const dbHelpers = new DatabaseHelpers(userId);
 
@@ -129,7 +129,9 @@ router.post('/',
       const service = await dbHelpers.createService({
         team_id,
         name: name.trim(),
-        description: description?.trim() || null
+        description: description?.trim() || null,
+        entity_type: entity_type || 'service',
+        active_status: active_status || 'active'
       });
 
       // Audit logging

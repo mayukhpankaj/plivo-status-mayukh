@@ -1,0 +1,17 @@
+{
+	"ulid": "01K5NRXS4SEV7P82BMREK07S31",
+	"minTime": 1758435350805,
+	"maxTime": 1758441600000,
+	"stats": {
+		"numSamples": 120897,
+		"numSeries": 796,
+		"numChunks": 1536
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01K5NRXS4SEV7P82BMREK07S31"
+		]
+	},
+	"version": 1
+}

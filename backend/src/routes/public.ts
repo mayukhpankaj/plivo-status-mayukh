@@ -57,7 +57,7 @@ router.get('/:orgSlug',
       // Get services for the teams
       const { data: services, error: servicesError } = await supabase
         .from('services')
-        .select('id, name, description, status, team_id, teams(id, name, slug)')
+        .select('id, name, description, status, entity_type, active_status, team_id, teams(id, name, slug)')
         .in('team_id', teamIds)
         .order('name');
 

@@ -75,6 +75,8 @@ export class DatabaseHelpers {
     team_id: string;
     name: string;
     description?: string;
+    entity_type?: string;
+    active_status?: string;
   }): Promise<Service> {
     return this.queryBuilder.createService(serviceData);
   }
